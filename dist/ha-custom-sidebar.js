@@ -19,7 +19,7 @@
   !window.$customSidebarV2 &&
     (window.$customSidebarV2 = { tryCounter: 0, try_limit: 20, Loaded: false });
 
-  const ver = '301217_2359';
+  const ver = '2025_5_10';
 
   let runInterval;
 
@@ -127,13 +127,16 @@
     sidebar = sidebar && sidebar.shadowRoot;
     window.$customSidebarV2.TitleElement =
       sidebar && sidebar.querySelector('.title');
-    sidebar = sidebar && sidebar.querySelector('paper-listbox');
+    let paper_list = sidebar && sidebar.querySelector('paper-listbox');
+    let haSortable = sidebar && sidebar.querySelector('ha-sortable ha-md-list');
+    sidebar = paper_list ? paper_list : haSortable;
 
     if (!sidebar && window.$customSidebarV2.tryCounter > window.$customSidebarV2.try_limit)
       log('warn', 'Cannot find "ha-drawer ha-sidebar paper-listbox" element');
 
     return (window.$customSidebarV2.SideBarElement = sidebar);
   }
+
   function searchforItem(itemName, root) {
     if (itemName != '_grab_url') {
       itemName = Array.from(root.children).find((element) => {
@@ -249,7 +252,12 @@
 
   function findNameElement(element) {
     let txtEl = element.querySelector('paper-icon-item');
-    txtEl = (txtEl && txtEl.querySelector('.item-text')) || {};
+    if (txtEl) {
+      txtEl = (txtEl && txtEl.querySelector('.item-text')) || {};
+    }
+    else {
+      txtEl = element.querySelector(".item-text") || {};
+    }
     return txtEl;
   }
 
@@ -264,7 +272,7 @@
   function findItem(elements, config_entry) {
     try {
       const item = Array.from(elements.children).find((element) => {
-        if (element.tagName !== 'A') {
+        if (element.tagName !== 'A' && element.tagName !== 'HA-MD-LIST-ITEM') {
           return false;
         }
         const currentName = findNameElement(element).innerText.trim();
