@@ -129,7 +129,8 @@
       sidebar && sidebar.querySelector('.title');
     let paper_list = sidebar && sidebar.querySelector('paper-listbox');
     let haSortable = sidebar && sidebar.querySelector('ha-sortable ha-md-list');
-    sidebar = paper_list ? paper_list : haSortable;
+    let haMdList= sidebar && sidebar.querySelector('ha-md-list');
+    sidebar = paper_list ?? haSortable ?? haMdList;
 
     if (!sidebar && window.$customSidebarV2.tryCounter > window.$customSidebarV2.try_limit)
       log('warn', 'Cannot find "ha-drawer ha-sidebar paper-listbox" element');
