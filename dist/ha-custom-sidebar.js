@@ -19,7 +19,7 @@
   !window.$customSidebarV2 &&
     (window.$customSidebarV2 = { tryCounter: 0, try_limit: 20, Loaded: false });
 
-  const ver = '2025_5_10';
+  const ver = '2026_5_0';
 
   let runInterval;
 
@@ -135,6 +135,8 @@
     if (!sidebar && window.$customSidebarV2.tryCounter > window.$customSidebarV2.try_limit)
       log('warn', 'Cannot find "ha-drawer ha-sidebar paper-listbox" element');
 
+    let sidebarBottom = sidebar && sidebar.querySelector('ha-md-list.after-spacer');
+    window.$customSidebarV2.SideBarBottomElement = sidebarBottom
     return (window.$customSidebarV2.SideBarElement = sidebar);
   }
 
@@ -190,8 +192,14 @@
             element.tagName == 'DIV' && element.classList.contains('spacer')
           );
         });
-        spacerElement.style.order = spacerOrder;
-        spacerElement.style.flexGrow = 5;
+        spacerElement && (spacerElement.style.order = spacerOrder);
+        spacerElement && (spacerElement.style.flexGrow = 5);
+
+        // Move all defaults to bottom "assuming user will not higher then this number :)"
+        if (window.$customSidebarV2.SideBarBottomElement) {
+          [...window.$customSidebarV2.SideBarBottomElement.children]
+              .forEach(e => e.style.order = 9999999999999999999);
+        }
 
         order.forEach((item, i) => {
           const shouldCreate = item.new_item && !item.created;
@@ -296,11 +304,15 @@
   function setOrder(element, config_entry, index) {
     config_entry.order &&
       (config_entry.order = parseInt(config_entry.order) || null);
-
+    
     element &&
       (element.style.order = config_entry.bottom
         ? (config_entry.order || index + 1) + spacerOrder
         : config_entry.order || index + 1);
+
+    if (window.$customSidebarV2.SideBarBottomElement && config_entry.bottom) {
+      window.$customSidebarV2.SideBarBottomElement.prepend(element);
+    }
   }
 
   function createItem(elements, config_entry, index) {
@@ -461,6 +473,7 @@
     try {
       window.$customSidebarV2.DrawerLayoutElement = getDrawerLayout();
       window.$customSidebarV2.SideBarElement = getSidebar();
+      window.$customSidebarV2.SideBarBottomElement = window.$customSidebarV2.SideBarBottomElement
       window.$customSidebarV2.SidebarItemElement =
         window.$customSidebarV2.SideBarElement &&
         getSidebarItem(window.$customSidebarV2.SideBarElement);
