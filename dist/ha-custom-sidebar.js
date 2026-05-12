@@ -130,12 +130,13 @@
     let paper_list = sidebar && sidebar.querySelector('paper-listbox');
     let haSortable = sidebar && sidebar.querySelector('ha-sortable ha-md-list');
     let haMdList= sidebar && sidebar.querySelector('ha-md-list');
+    let sidebarBottom = sidebar && sidebar.querySelector('ha-md-list.after-spacer');
+
     sidebar = paper_list ?? haSortable ?? haMdList;
 
     if (!sidebar && window.$customSidebarV2.tryCounter > window.$customSidebarV2.try_limit)
       log('warn', 'Cannot find "ha-drawer ha-sidebar paper-listbox" element');
 
-    let sidebarBottom = sidebar && sidebar.querySelector('ha-md-list.after-spacer');
     window.$customSidebarV2.SideBarBottomElement = sidebarBottom
     return (window.$customSidebarV2.SideBarElement = sidebar);
   }
